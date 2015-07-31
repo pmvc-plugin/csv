@@ -73,10 +73,8 @@ class CsvReader implements \Iterator
     {
         if ($this->charset!='UTF-8') {
             $string=mb_convert_encoding($string, $this->charset, 'UTF-8');
-            return $string;
-        } else {
-            return $string;
-        }
+        } 
+        return $string;
     }
 
     public function setColumn($arr)
