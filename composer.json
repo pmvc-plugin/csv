@@ -1,0 +1,17 @@
+{
+    "name": "pmvc-plugin/csv",
+    "description": "CSV lib",
+    "type": "library",
+    "keywords": ["csv", "pmvc", "plug-in"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hill",
+            "email": "hill@kimo.com"
+        }
+    ],
+    "require": {
+        "pmvc/pmvc": "*"
+    },
+    "minimum-stability": "dev"
+}
