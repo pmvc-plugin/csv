@@ -9,31 +9,24 @@ class CsvReader implements \Iterator
     public $_values=array();
     public $column=array();
     public $charset;
-    public $tmpf;
     public $fp;
     public $fSize;
 
     public function open($file, $charset='UTF-8', $column=true, $ignore=0)
     {
-        $this->tmpf=tempnam('', 'csv');
         $this->charset = $charset;
-        $this->fSize=filesize($file)+10;
+        $data = file_get_contents($file);
         if ($this->charset!='UTF-8') {
-            $data=file_get_contents($file);
             $data=mb_convert_encoding($data, 'UTF-8', $this->charset);
             $data=stripslashes($data);
-            $fp=fopen($this->tmpf, 'w+');
-            ftruncate($fp, 0);
-            fputs($fp, $data, strlen($data));
-            fclose($fp);
-            unset($data);
-        } else {
-            copy($file, $this->tmpf);
         }
+        $this->fSize = strlen($data)+10;
+        $this->fp = tmpfile(); 
+        fputs($this->fp, $data, strlen($data));
         if (!is_null($column)) {
             $this->setColumn($column);
         }
-        $this->fp=fopen($this->tmpf, 'r');
+        fseek($this->fp, 0);
         for ($i=0;$i<$ignore;$i++) {
             fgetcsv($this->fp, $this->fSize, ',');
         }
@@ -42,7 +35,6 @@ class CsvReader implements \Iterator
     public function close()
     {
         fclose($this->fp);
-        unlink($this->tmpf);
     }
     
     public function readCsvLine()
