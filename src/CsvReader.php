@@ -22,7 +22,7 @@ class CsvReader implements \Iterator
         }
         $this->fSize = strlen($data)+10;
         $this->fp = tmpfile(); 
-        fputs($this->fp, $data, strlen($data));
+        fwrite($this->fp, $data, $this->fSize);
         if (!is_null($column)) {
             $this->setColumn($column);
         }
