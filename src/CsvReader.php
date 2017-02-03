@@ -1,7 +1,9 @@
 <?php
 namespace PMVC\PlugIn\csv;
 
-class CsvReader implements \Iterator
+use Iterator;
+
+class CsvReader implements Iterator
 {
     public $BOF=false;
     public $EOF=false;
