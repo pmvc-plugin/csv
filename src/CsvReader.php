@@ -39,7 +39,9 @@ class CsvReader implements Iterator
     
     public function __destruct()
     {
-        fclose($this->fp);
+        if (is_resource($this->fp)) {
+            fclose($this->fp);
+        }
     }
     
     public function readCsvLine()
