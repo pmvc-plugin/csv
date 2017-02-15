@@ -14,8 +14,14 @@ class CsvReader implements Iterator
     public $fp;
     public $fSize;
 
-    public function read($data, $charset='UTF-8', $column=true, $ignore=0)
+    public function read($data, $charset=null, $ignore=null)
     {
+        if (is_null($charset)) {
+            $charset='UTF-8';
+        }
+        if (is_null($ignore)) {
+            $ignore = 0;
+        }
         $this->charset = $charset;
         if ($this->charset!='UTF-8') {
             $data=mb_convert_encoding($data, 'UTF-8', $this->charset);
@@ -24,11 +30,9 @@ class CsvReader implements Iterator
         $this->fSize = strlen($data)+10;
         $this->fp = tmpfile(); 
         fwrite($this->fp, $data, $this->fSize);
-        if (!is_null($column)) {
-            $this->setColumn($column);
-        }
         fseek($this->fp, 0);
         for ($i=0;$i<$ignore;$i++) {
+            //strip ignore row
             fgetcsv($this->fp, $this->fSize, ',');
         }
     }
@@ -42,18 +46,16 @@ class CsvReader implements Iterator
     {
         $data=fgetcsv($this->fp, $this->fSize, ',');
         if ($data) {
-            $a = array();
-            if (!$this->BOF && $this->column===true) {
+            if (!$this->BOF && !$this->column) {
                 $this->setColumn($data);
                 $this->BOF = true;
-                $data = $this->readCsvLine();
-                return $data;
+                $data = fgetcsv($this->fp, $this->fSize, ',');
             }
-            if (!$this->BOF) {
-                $this->BOF = true;
-            }
+            $a = [];
             foreach ($this->column as $k=>$v) {
-                $a[$v] = $this->changeCharset($data[$k]);
+                if (isset($data[$k])) {
+                    $a[$v] = trim($data[$k]);
+                }
             }
             $this->_values[] = $a;
         } else {
@@ -62,13 +64,6 @@ class CsvReader implements Iterator
         return $data;
     }
     
-    public function changeCharset(&$string)
-    {
-        if ($this->charset!='UTF-8') {
-            $string=mb_convert_encoding($string, $this->charset, 'UTF-8');
-        } 
-        return $string;
-    }
 
     public function setColumn($arr)
     {
@@ -79,11 +74,8 @@ class CsvReader implements Iterator
 */
     public function current()
     {
-        if (!$this->BOF && !$this->CsvEOF) {
-            $this->readCsvLine();
-        } else {
-            $this->BOF = true;
-        }
+        $this->readCsvLine();
+        $this->BOF = true;
         $return = current($this->_values);
         return $return;
     }
