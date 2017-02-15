@@ -14,10 +14,9 @@ class CsvReader implements Iterator
     public $fp;
     public $fSize;
 
-    public function open($file, $charset='UTF-8', $column=true, $ignore=0)
+    public function read($data, $charset='UTF-8', $column=true, $ignore=0)
     {
         $this->charset = $charset;
-        $data = file_get_contents($file);
         if ($this->charset!='UTF-8') {
             $data=mb_convert_encoding($data, 'UTF-8', $this->charset);
             $data=stripslashes($data);
@@ -34,7 +33,7 @@ class CsvReader implements Iterator
         }
     }
     
-    public function close()
+    public function __destruct()
     {
         fclose($this->fp);
     }

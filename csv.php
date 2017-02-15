@@ -7,16 +7,25 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\csv';
 
 class csv extends \PMVC\PlugIn
 {
-    public function get($file)
+    public function init()
     {
        ini_set('auto_detect_line_endings',TRUE);
+    }
+
+    public function get($file)
+    {
+       $content = file_get_contents($file);
+       return $this->read($content);
+    }
+
+    public function read($content)
+    {
        $csv = new CsvReader(); 
-       $csv->open($file);
-       $data = array();
+       $csv->read($content);
+       $data = [];
        foreach ($csv as $v) {
             $data[] = $v;
        }
-       $csv->close();
        return $data;
     }
 }
