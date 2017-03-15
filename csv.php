@@ -12,20 +12,27 @@ class csv extends \PMVC\PlugIn
         ini_set('auto_detect_line_endings', true);
     }
 
-    public function get(
-        $file,
-        $charset=null,
-        $ignore=null
-    ) {
-    
-        $content = file_get_contents($file);
-        return $this->read($content, $charset, $ignore);
+    public function get() {
+        $args = func_get_args();
+        if (is_file($args[0])) {
+            $args[0] = file_get_contents($args[0]);
+        }
+        return call_user_func_array(
+            [
+                $this,
+                '_read'
+            ],
+            $args
+        );
     }
 
-    public function read(
+    /**
+     * @params int $startRow start from zero
+     */
+    private function _read(
         $content,
         $charset=null,
-        $ignore=null,
+        $startZeroRow=null,
         $callback=null
     ) {
     
@@ -33,7 +40,7 @@ class csv extends \PMVC\PlugIn
         if (isset($this['col'])) {
             $csv->setColumn($this['col']);
         }
-        $csv->read($content, $charset, $ignore);
+        $csv->read($content, $charset, $startZeroRow);
         $data = [];
         foreach ($csv as $v) {
             if (is_callable($callback)) {

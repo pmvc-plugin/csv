@@ -14,13 +14,13 @@ class CsvReader implements Iterator
     public $fp;
     public $fSize;
 
-    public function read($data, $charset=null, $ignore=null)
+    public function read($data, $charset=null, $startZeroRow=null)
     {
         if (is_null($charset)) {
             $charset='UTF-8';
         }
-        if (is_null($ignore)) {
-            $ignore = 0;
+        if (is_null($startZeroRow)) {
+            $startZeroRow = 0;
         }
         $this->charset = $charset;
         if ($this->charset!='UTF-8') {
@@ -31,7 +31,7 @@ class CsvReader implements Iterator
         $this->fp = tmpfile(); 
         fwrite($this->fp, $data, $this->fSize);
         fseek($this->fp, 0);
-        for ($i=0;$i<$ignore;$i++) {
+        for ($i=0;$i<$startZeroRow;$i++) {
             //strip ignore row
             fgetcsv($this->fp, $this->fSize, ',');
         }
