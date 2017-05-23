@@ -46,13 +46,12 @@ class csv extends \PMVC\PlugIn
             if (is_callable($callback)) {
                 $k = null;
                 $continue = call_user_func_array($callback,[&$v, &$k]);
-                if (is_null($v)) {
-                    continue;
-                }
-                if ($k) {
-                    $data[$k] = $v;
-                } else {
-                    $data[] = $v;
+                if (!is_null($v)) {
+                    if ($k) {
+                        $data[$k] = $v;
+                    } else {
+                        $data[] = $v;
+                    }
                 }
                 if (!$continue) {
                     break;
